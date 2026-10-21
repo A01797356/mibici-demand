@@ -3,7 +3,8 @@ Todos los umbrales viven aquí para que no haya "números mágicos" en el códig
 y para poder registrarlos como parámetros en MLflow.
 """
 
-import osfrom pathlib import Path
+import os
+from pathlib import Path
 from dotenv import load_dotenv
 from loguru import logger
 
@@ -17,6 +18,7 @@ logger.info(f"PROJ_ROOT path is: {PROJ_ROOT}")
 DATA_DIR = PROJ_ROOT / "data"
 RAW_DATA_DIR = DATA_DIR / "raw"
 INTERIM_DATA_DIR = DATA_DIR / "interim"
+RAW_TRIPS_DIR = RAW_DATA_DIR / "trips"
 PROCESSED_DATA_DIR = DATA_DIR / "processed"
 EXTERNAL_DATA_DIR = DATA_DIR / "external"
 
