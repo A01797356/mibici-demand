@@ -4,7 +4,33 @@
     <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />
 </a>
 
-Proyecto MLOPS Equipo 03
+Proyecto MLOps · Equipo 03 · TC5044.10 Operaciones de aprendizaje automático (Tec de Monterrey, MNA).
+
+Predicción de demanda de bicicletas por estación con los datos abiertos de
+[MiBici](https://mibici.net/en/open-data/) (Área Metropolitana de Guadalajara).
+
+## Integrantes
+
+| Integrante | GitHub |
+|---|---|
+| Jaime Espinosa | [@A01797356](https://github.com/A01797356) |
+| _por definir_ | |
+
+## Setup
+
+Requisitos: Python 3.12 (WSL/Linux) y un servidor MLflow accesible.
+
+```bash
+git clone https://github.com/A01797356/mibici-demand.git
+cd mibici-demand
+python3.12 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+echo "MLFLOW_TRACKING_URI=http://127.0.0.1:5000" > .env   # .env no se versiona
+pytest
+```
+
+Los datos (`data/`) no se versionan en Git; sus versiones se registran en MLflow.
 
 ## Project Organization
 
