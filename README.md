@@ -14,7 +14,7 @@ Predicción de demanda de bicicletas por estación con los datos abiertos de
 | Integrante | GitHub |
 |---|---|
 | Jaime Espinosa | [@A01797356](https://github.com/A01797356) |
-| Samantha Rizo Franco | [@A01796848]([https://github.com/A01797356](https://github.com/SamanthaRizo)|
+| Samantha Rizo Franco | [@A01796848]([https://github.com/A01797356](https://github.com/SamanthaRizo) |
 
 ## Setup
 
