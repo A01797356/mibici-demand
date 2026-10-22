@@ -1,13 +1,23 @@
 from pathlib import Path
+import re
+import unicodedata
 
 from loguru import logger
+import numpy as np
+import pandas as pd
 from tqdm import tqdm
 import typer
 
-from mibici_demand.config import PROCESSED_DATA_DIR, RAW_DATA_DIR
+from mibici_demand.config import (
+    CLEAN_TRIPS_FILE,
+    CLEANING_PARAMS,
+    EXPERIMENT_DATA,
+    RAW_TRIPS_DIR,
+    STATIONS_FILE,
+)
+from mibici_demand.tracking import log_dataset_version, mlflow_run
 
-app = typer.Typer()
-
+app = typer.Typer(help="Descarga y limpieza de los viajes de MiBici.")
 
 @app.command()
 def main(
