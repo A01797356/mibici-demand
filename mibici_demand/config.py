@@ -72,6 +72,12 @@ FEATURE_PARAMS = {
     "pca_components": 5,
 }
 
+INVALID_ID_VALUES = {
+    "Origen_Id": [0],
+    "Destino_Id": [0],
+    "Viaje_Id": [0],
+}
+
 # If tqdm is installed, configure loguru with tqdm.write
 # https://github.com/Delgan/loguru/issues/135
 try:
