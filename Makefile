@@ -6,6 +6,14 @@ PROJECT_NAME = mibici_demand
 PYTHON_VERSION = 3.12
 PYTHON_INTERPRETER = python
 
+# Parámetros del pipeline. Para cmabiarlos: make data PATTERN="datos_abiertos_2023_*.csv" VERSION=v2
+PATTERN ?= datos_abiertos_2024_*.csv
+VERSION ?= v1
+MLFLOW_PORT ?= 5000
+
+# En Codespaces el navegador entra a MLflow por un dominio *.app.github.dev y bloquea dominios que no sean localhost
+MLFLOW_HOSTS := $(if $(CODESPACES),--allowed-hosts "*",)
+
 #################################################################################
 # COMMANDS                                                                      #
 #################################################################################
@@ -50,8 +58,8 @@ test:
 ## Set up Python interpreter environment
 .PHONY: create_environment
 create_environment:
-	@bash -c "if [ ! -z `which virtualenvwrapper.sh` ]; then source `which virtualenvwrapper.sh`; mkvirtualenv $(PROJECT_NAME) --python=$(PYTHON_INTERPRETER); else mkvirtualenv.bat $(PROJECT_NAME) --python=$(PYTHON_INTERPRETER); fi"
-	@echo ">>> New virtualenv created. Activate with:\nworkon $(PROJECT_NAME)"
+	python$(PYTHON_VERSION) -m venv .venv
+	@echo ">>> Entorno creado. Actívalo con: source .venv/bin/activate"
 	
 
 
@@ -62,10 +70,35 @@ create_environment:
 
 
 ## Make dataset
-.PHONY: data
-data: requirements
-	$(PYTHON_INTERPRETER) mibici_demand/dataset.py
+.PHONY: mlflow-ui
+mlflow-ui:
+	mlflow server --backend-store-uri sqlite:///mlflow.db \
+		--artifacts-destination ./mlartifacts --host 127.0.0.1 --port $(MLFLOW_PORT) $(MLFLOW_HOSTS)
 
+## Descarga MiBici CSVs a data/raw/trips/ y el catálogo de estaicones a data/raw/
+.PHONY: download
+download:
+	$(PYTHON_INTERPRETER) -m mibici_demand.download
+
+## Archivos de limpieza -> data/interim/trips_clean.parquet 
+.PHONY: data
+data:
+	$(PYTHON_INTERPRETER) -m mibici_demand.dataset clean --pattern "$(PATTERN)" --version $(VERSION)
+
+## Genera las variables para el modelo, divide los datos en entrenamiento y prueba, prepara el preprocesador y aplica PCA. Registra la versión en MLflow.
+.PHONY: features
+features:
+	$(PYTHON_INTERPRETER) -m mibici_demand.features --version $(VERSION)
+
+## Genera gráficas para EDA
+## y las registra en MLflow.
+.PHONY: plots
+plots:
+	$(PYTHON_INTERPRETER) -m mibici_demand.plots
+
+## Ejecuta el proceso en orden:preparación de datos, generación de variables y creación de gráficas.
+.PHONY: pipeline
+pipeline: data features plots
 
 #################################################################################
 # Self Documenting Commands                                                     #
