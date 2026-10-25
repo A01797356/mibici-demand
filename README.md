@@ -15,6 +15,8 @@ Predicción de demanda de bicicletas por estación con los datos abiertos de
 |---|---|
 | Jaime Espinosa | [@A01797356](https://github.com/A01797356) |
 | Samantha Rizo Franco | [@SamanthaRizo](https://github.com/SamanthaRizo) |
+| Ytalo Zerpa | [@ZerpaYtalo](https://github.com/ZerpaYtalo) |
+
 
 ## Setup
 
@@ -97,7 +99,20 @@ Para probar sin MLflow agregar `--no-track`.
     │   └── train.py            <- Code to train models
     │
     └── plots.py                <- Code to create visualizations
+ 
 ```
+# Avance de preparación de datos
+Se ejecutó exitosamente la descarga y estandarización de los datos históricos de MiBici.
 
+Results
+Downloaded files: 143 CSV files
+Standardized files: 142 Parquet files
+Processed records: 39,078,984
+Pipeline
+download.py ↓ Raw CSV files
+
+dataset.py ↓ Standardization
+
+Parquet files ↓ data/interim/standardized
 --------
 
