@@ -40,21 +40,31 @@ def plot_demand_by_hour(trips: pd.DataFrame):
     fig, ax = plt.subplots(figsize=(10, 4))
     for label, mask in (("Entre semana", ~weekend), ("Fin de semana", weekend)):
         n_days = days[mask].nunique() or 1
-        (t[mask].dt.hour.value_counts().sort_index() / n_days).plot(ax=ax, marker="o", label=label)
+        # reindex(range(24)): las horas sin viajes (madrugada) se grafican como 0
+        # en lugar de unir con una línea los puntos de antes y después.
+        per_hour = t[mask].dt.hour.value_counts().reindex(range(24), fill_value=0)
+        (per_hour / n_days).plot(ax=ax, marker="o", label=label)
+    ax.set_xticks(range(24))
     ax.set(title="Viajes promedio por hora del día", xlabel="Hora", ylabel="Viajes / día")
     ax.legend()
     ax.grid(alpha=0.3)
     return fig
 
+
 def plot_heatmap_day_hour(trips: pd.DataFrame):
     t = trips["start_time"]
-    table = pd.crosstab(t.dt.dayofweek, t.dt.hour)
+    # reindex(range(24)): siempre 24 columnas, aunque haya horas sin viajes. Sin esto,
+    # si faltan horas (p. ej. de 2 a 4 a. m.) las columnas se recorren y el eje X
+    # muestra horas equivocadas.
+    table = pd.crosstab(t.dt.dayofweek, t.dt.hour).reindex(columns=range(24), fill_value=0)
     fig, ax = plt.subplots(figsize=(11, 4))
     im = ax.imshow(table.values, aspect="auto", cmap="viridis")
+    ax.set_xticks(range(24), range(24))
     ax.set_yticks(range(len(table.index)), [DAY_NAMES[i] for i in table.index])
     ax.set(title="Viajes por día de la semana y hora", xlabel="Hora")
     fig.colorbar(im, ax=ax, label="Viajes")
     return fig
+
 
 def plot_duration_distribution(trips: pd.DataFrame):
     fig, ax = plt.subplots(figsize=(8, 4))
