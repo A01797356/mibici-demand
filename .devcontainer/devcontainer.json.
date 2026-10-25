@@ -1,0 +1,16 @@
+{
+  // Entorno de GitHub Codespaces
+  "name": "mibici-demand",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+  "postCreateCommand": "pip install -r requirements.txt",
+  // Puerto del servidor MLflow (make mlflow-ui)
+  "forwardPorts": [5000],
+  "portsAttributes": {
+    "5000": { "label": "MLflow" }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-python.python", "ms-toolsai.jupyter"]
+    }
+  }
+}
