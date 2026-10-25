@@ -1,0 +1,13 @@
+{
+  "trip_id": "Int64",
+  "user_id": "Int64",
+  "gender": "category",
+  "birth_year": "Int16",
+  "start_time": "datetime64[ns]",
+  "end_time": "datetime64[ns]",
+  "origin_id": "int32",
+  "destination_id": "int32",
+  "duration_min": "float32",
+  "age": "float32",
+  "source_file": "category"
+}

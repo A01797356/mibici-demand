@@ -1,0 +1,20 @@
+{
+  "station_id": "int32",
+  "timestamp": "datetime64[ns]",
+  "departures": "int32",
+  "hour": "int8",
+  "dayofweek": "int8",
+  "month": "int8",
+  "is_weekend": "int8",
+  "is_holiday": "int8",
+  "hour_sin": "float32",
+  "hour_cos": "float32",
+  "dow_sin": "float32",
+  "dow_cos": "float32",
+  "lag_1": "float32",
+  "lag_24": "float32",
+  "lag_168": "float32",
+  "rolling_mean_24": "float32",
+  "latitude": "Float64",
+  "longitude": "Float64"
+}
