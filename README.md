@@ -32,6 +32,22 @@ pytest
 
 Los datos (`data/`) no se versionan en Git; sus versiones se registran en MLflow.
 
+## Datos y limpieza
+
+```bash
+# Terminal 2: servidor MLflow local
+mlflow server --backend-store-uri sqlite:///mlflow.db \
+  --artifacts-destination ./mlartifacts --host 127.0.0.1 --port 5000
+
+# Terminal 1
+python -m mibici_demand.download # CSV -> data/raw/trips/ y nomenclatura -> data/raw/
+python -m mibici_demand.dataset standardize # opcional: estandariza un parquet por mes
+python -m mibici_demand.dataset clean --pattern "datos_abiertos_2024_*.csv" --version v1
+```
+
+`clean` genera `data/interim/trips_clean.parquet` y registra la versión `trips_clean_v1` en el experimento `mibici-data versioning` de MLflow (http://127.0.0.1:5000).
+Para probar sin MLflow agregar `--no-track`.
+
 ## Project Organization
 
 ```
