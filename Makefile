@@ -78,7 +78,7 @@ mlflow-ui:
 ## Descarga MiBici CSVs a data/raw/trips/ y el catálogo de estaicones a data/raw/
 .PHONY: download
 download:
-	$(PYTHON_INTERPRETER) -m mibici_demand.download
+	$(PYTHON_INTERPRETER) -m mibici_demand.download --pattern "$(PATTERN)"
 
 ## Archivos de limpieza -> data/interim/trips_clean.parquet 
 .PHONY: data

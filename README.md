@@ -42,7 +42,7 @@ mlflow server --backend-store-uri sqlite:///mlflow.db \
   --artifacts-destination ./mlartifacts --host 127.0.0.1 --port 5000
 
 # Terminal 1
-python -m mibici_demand.download # CSV -> data/raw/trips/ y nomenclatura -> data/raw/
+python -m mibici_demand.download --pattern "datos_abiertos_2024_*.csv" # CSV -> data/raw/trips/ y nomenclatura -> data/raw/ (sin --pattern: todo el histórico)
 python -m mibici_demand.dataset standardize # opcional: estandariza un parquet por mes
 python -m mibici_demand.dataset clean --pattern "datos_abiertos_2024_*.csv" --version v1
 ```
