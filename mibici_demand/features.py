@@ -17,6 +17,7 @@ import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.decomposition import PCA
 from sklearn.impute import SimpleImputer
+from sklearn.model_selection import KFold
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler, TargetEncoder
 import typer
@@ -148,7 +149,13 @@ def build_preprocessor(columns: list[str]) -> ColumnTransformer:
         [
             ("num", make_pipeline(SimpleImputer(strategy="median"), StandardScaler()), numeric),
             ("month", OneHotEncoder(handle_unknown="ignore", sparse_output=False), ["month"]),
-            ("station", TargetEncoder(target_type="continuous", random_state=42), ["station_id"]),
+            (
+                "station",
+                TargetEncoder(
+                    target_type="continuous", cv=KFold(5, shuffle=True, random_state=42)
+                ),
+                ["station_id"],
+            ),
             ("raw", "passthrough", passthrough),
         ],
         verbose_feature_names_out=False,

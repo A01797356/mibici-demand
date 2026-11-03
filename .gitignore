@@ -194,3 +194,6 @@ cython_debug/
 mlruns/
 mlartifacts/
 mlflow.db
+
+# Artefactos generados (se versionan en MLflow, no en Git)
+models/*.joblib
