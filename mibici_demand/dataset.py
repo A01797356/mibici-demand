@@ -53,10 +53,10 @@ ESSENTIAL_COLUMNS = ["start_time", "end_time", "origin_id", "destination_id"]
 
 def leer_datos(archivo: Path) -> pd.DataFrame:
     """Lee un CSV mensual como texto, conservando los nulos y los IDs originales."""
-    with archivo.open("rb") as entrada:
-        encabezado = entrada.readline()
+    # Se valida el archivo completo: hay CSV con encabezado ASCII y cuerpo en cp1252
+    # (p. ej. nomenclatura_2026_10.csv), así que el encabezado no basta.
     try:
-        encabezado.decode("utf-8-sig")
+        archivo.read_bytes().decode("utf-8-sig")
         codificacion = "utf-8-sig"
     except UnicodeDecodeError:
         codificacion = "cp1252"
