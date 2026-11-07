@@ -34,6 +34,7 @@ FEATURES_FILE = PROCESSED_DATA_DIR / "features.parquet"
 TRAIN_FILE = PROCESSED_DATA_DIR / "train.parquet"
 TEST_FILE = PROCESSED_DATA_DIR / "test.parquet"
 PREPROCESSOR_FILE = MODELS_DIR / "preprocessor.joblib"
+PREDICTIONS_FILE = PROCESSED_DATA_DIR / "test_predictions.parquet"
 
 # /data/ está en .gitignore, así que las carpetas no existen al clonar.
 for _dir in (
@@ -53,6 +54,7 @@ MIBICI_OPEN_DATA_URL = "https://mibici.net/en/open-data/"
 MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", "http://127.0.0.1:5000")
 EXPERIMENT_DATA = "mibici-data-versioning"
 EXPERIMENT_EDA = "mibici-eda"
+EXPERIMENT_TRAIN = "mibici-training"
 
 # Parámetros de limpieza (se registran en MLflow en cada versión del dataset)
 CLEANING_PARAMS = {
@@ -70,6 +72,28 @@ FEATURE_PARAMS = {
     "lags": [1, 24, 168],  # 1 hora, 1 día y 1 semana antes
     "test_fraction": 0.2,  # último 20 % del periodo como test (split temporal)
     "pca_components": 5,
+}
+
+# Parámetros de modelado (se registran en MLflow en cada run de entrenamiento)
+MODEL_PARAMS = {
+    "horizon_h": 24,  # se predice con 24 h de anticipación: solo se usan lags >= 24 h
+    "registered_model": "mibici-demand-24h",  # nombre en el MLflow Model Registry
+    "champion_alias": "champion",  # alias del modelo con menor MAE en test
+    "random_state": 42,
+    "cv_splits": 3,  # TimeSeriesSplit: cada fold valida con datos posteriores a los de ajuste
+    "n_iter": 8,  # combinaciones de hiperparámetros por modelo (RandomizedSearchCV)
+    "tune_max_rows": 500_000,  # muestra de train para el tuning; el modelo final usa todo train
+}
+
+# Espacios de búsqueda por modelo (prefijo model__ = paso "model" del Pipeline)
+SEARCH_SPACES = {
+    "ridge": {"model__alpha": [0.1, 1.0, 10.0, 100.0]},
+    "hgb_poisson": {
+        "model__learning_rate": [0.05, 0.1, 0.2],
+        "model__max_leaf_nodes": [31, 63, 127],
+        "model__min_samples_leaf": [20, 100, 500],
+        "model__l2_regularization": [0.0, 1.0],
+    },
 }
 
 INVALID_ID_VALUES = {

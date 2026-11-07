@@ -96,6 +96,16 @@ features:
 plots:
 	$(PYTHON_INTERPRETER) -m mibici_demand.plots
 
+## Entrena y ajusta los modelos, los registra en MLflow y marca el campeón en el Model Registry.
+.PHONY: train
+train:
+	$(PYTHON_INTERPRETER) -m mibici_demand.modeling.train --version $(VERSION)
+
+## Predice el periodo de test con el modelo campeón del Model Registry.
+.PHONY: predict
+predict:
+	$(PYTHON_INTERPRETER) -m mibici_demand.modeling.predict
+
 ## Ejecuta el proceso en orden:preparación de datos, generación de variables y creación de gráficas.
 .PHONY: pipeline
 pipeline: data features plots
