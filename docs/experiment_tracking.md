@@ -76,8 +76,11 @@ Hallazgos:
 
 - `hgb_poisson` es el mejor en todas las métricas: reduce el MAE 17.7 % frente al baseline y 13 % frente a Ridge.
 - Ridge apenas mejora al baseline y casi no cambia con `alpha`: la relación no es lineal.
-- En `hgb_poisson` los árboles grandes (`max_leaf_nodes=127`) con hojas de más muestras
-  (`min_samples_leaf=500`) dan los mejores resultados; `learning_rate=0.05` es el peor.
+- Las tres mejores configuraciones de `hgb_poisson` presentan resultados de validación muy similares:
+  la diferencia máxima en `cv_mae` es aproximadamente 0.00062 (0.0007 con los valores redondeados
+  de la tabla), menor que la desviación estándar entre folds (aproximadamente 0.01).
+  La configuración seleccionada obtuvo el menor MAE promedio entre las evaluadas, sin que esta
+  búsqueda permita aislar el efecto de cada hiperparámetro ni demostrar equivalencia estadística.
 - `cv_mae` (0.819) y MAE de test (0.802) son cercanos: el modelo generaliza al periodo futuro.
 
 ## 4. Control de versiones (linaje)
