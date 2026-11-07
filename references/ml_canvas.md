@@ -17,7 +17,7 @@ Fuente de datos: [datos abiertos de MiBici](https://mibici.net/en/open-data/).
 - **Tipo:** regresión supervisada sobre series de tiempo (pronóstico).
 - **Entrada:** estación, fecha-hora, calendario e historial reciente de la estación.
 - **Salida:** viajes que inician en la estación en la hora (`departures`).
-- **Horizonte:** 1 hora; extensible a 24 h para planear el día siguiente.
+- **Horizonte:** 24h, para planear el día siguiente. La versión inicial de la Fase 1 planteaba 1 h, pero con ese horizonte no hay tiempo para planear la redistribución.
 
 ## 4. Fuentes de datos
 - 142 CSV mensuales (dic-2014 a sep-2026, 39,078,984 viajes): ID de viaje y usuario, género, año-nacimiento, inicio y fin, estaciones origen y destino.
@@ -36,7 +36,7 @@ Fuente de datos: [datos abiertos de MiBici](https://mibici.net/en/open-data/).
 
 ## 7. Construcción de modelos (Fase 2)
 - *Baseline* estacional: la demanda de la misma hora de la semana anterior (`lag_168`, la variable más correlacionada: 0.74).
-- Candidatos: regresión lineal/Poisson, Random Forest y gradient boosting.
+- Candidatos evaluados en la Fase 2: Ridge e HistGradientBoosting con pérdida Poisson. Random Forest, previsto inicialmente, no se evaluó.
 - Experimentos en MLflow, ligados a los datasets versionados de la Fase 1.
 
 ## 8. Predicciones
