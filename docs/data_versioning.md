@@ -24,7 +24,7 @@ Nota: los runs se ejecutaron desde una carpeta descargada (no un clon de Git), p
 |---|---|---|---|---|---|---|
 | `trips_clean_v1` | `mibici-data-versioning` | `9fc67e29c6dc422b9acaba8aefff7897` | 12 CSV de 2024 (4,645,921 viajes) | `data/interim/trips_clean.parquet` | 4,478,552 | Limpieza base (reglas abajo) |
 | `features_v1` | `mibici-data-versioning` | `887af1754757468588cd9790dc91f380` | `trips_clean_v1` | `features.parquet`, `train.parquet`, `test.parquet`, `preprocessor.joblib` | 3,108,454 (train 2,482,903 / test 625,551) | Demanda horaria, calendario, lags 1/24/168, split 80/20, PCA 5 componentes |
-| `trips_clean_v2` | `mibici-data-versioning` | `[Run ID]` | 142 CSV, dic-2014 a sep-2026 (39,078,984 viajes) | `data/interim/trips_clean.parquet` | 37,643,853 | Mismas reglas que v1; periodo completo. Digest `c594e16e` |
+| `trips_clean_v2` | `mibici-data-versioning` | `6b40cb172cb6463d9b03a748a09ff2fb` | 142 CSV, dic-2014 a sep-2026 (39,078,984 viajes) | `data/interim/trips_clean.parquet` | 37,643,853 | Mismas reglas que v1; periodo completo. Digest `c594e16e` |
 | `features_v2` | `mibici-data-versioning` | `ec2d6c8952d2450290313ed4c761f188` | `trips_clean_v2` | `features.parquet`, `train.parquet`, `test.parquet`, `preprocessor.joblib` | 29,214,351 (train 21,120,492 / test 8,093,859) | Mismas features que v1; 483 estaciones; test desde 2024-05-21. Digest `fc90632d` |
 | `eda_figures` | `mibici-eda` | `af95594fd18946548769275082d05aad` | `trips_clean_v1`, `features_v1` | 9 figuras en `reports/figures/` | — | Figuras del EDA |
 

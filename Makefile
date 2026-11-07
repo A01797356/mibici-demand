@@ -18,15 +18,11 @@ MLFLOW_HOSTS := $(if $(CODESPACES),--allowed-hosts "*",)
 # COMMANDS                                                                      #
 #################################################################################
 
-
 ## Install Python dependencies
 .PHONY: requirements
 requirements:
 	$(PYTHON_INTERPRETER) -m pip install -U pip
 	$(PYTHON_INTERPRETER) -m pip install -r requirements.txt
-	
-
-
 
 ## Delete all compiled Python files
 .PHONY: clean
@@ -47,8 +43,6 @@ format:
 	ruff check --fix
 	ruff format
 
-
-
 ## Run tests
 .PHONY: test
 test:
@@ -60,16 +54,13 @@ test:
 create_environment:
 	python$(PYTHON_VERSION) -m venv .venv
 	@echo ">>> Entorno creado. Actívalo con: source .venv/bin/activate"
-	
-
 
 
 #################################################################################
 # PROJECT RULES                                                                 #
 #################################################################################
 
-
-## Make dataset
+## Levanta el servidor local de MLflow
 .PHONY: mlflow-ui
 mlflow-ui:
 	mlflow server --backend-store-uri sqlite:///mlflow.db \
@@ -108,7 +99,7 @@ predict:
 
 ## Ejecuta el proceso en orden:preparación de datos, generación de variables y creación de gráficas.
 .PHONY: pipeline
-pipeline: data features plots
+pipeline: download data features plots train predict
 
 #################################################################################
 # Self Documenting Commands                                                     #
