@@ -1,4 +1,5 @@
 import csv
+from fnmatch import fnmatch
 from html.parser import HTMLParser
 from pathlib import Path
 import subprocess
@@ -6,6 +7,7 @@ from tempfile import NamedTemporaryFile
 from urllib.parse import urljoin, urlparse
 
 from loguru import logger
+import typer
 
 from mibici_demand.config import MIBICI_OPEN_DATA_URL, RAW_DATA_DIR, RAW_TRIPS_DIR
 
@@ -25,7 +27,22 @@ class EnlacesCSV(HTMLParser):
                     self.enlaces.add(url)
 
 
-def descargar_csvs() -> None:
+def filtrar_enlaces(enlaces: set[str], pattern: str) -> list[str]:
+    """Conserva el catálogo de estaciones y los CSV de viajes que coinciden con pattern."""
+    return sorted(
+        url
+        for url in enlaces
+        if not (nombre := Path(urlparse(url).path).name).startswith("datos_abiertos_")
+        or fnmatch(nombre, pattern)
+    )
+
+
+def descargar_csvs(
+    pattern: str = typer.Option(
+        "datos_abiertos_*.csv",
+        help='Patrón de los CSV de viajes, p. ej. "datos_abiertos_2024_*.csv"',
+    ),
+) -> None:
     """Descarga los CSV publicados por MiBici sin sobrescribir archivos existentes."""
     opciones_curl = [
         "curl",
@@ -53,7 +70,9 @@ def descargar_csvs() -> None:
     if not parser.enlaces:
         raise ValueError("No se encontraron enlaces CSV en la pagina.")
 
-    for numero, url in enumerate(sorted(parser.enlaces), start=1):
+    enlaces = filtrar_enlaces(parser.enlaces, pattern)
+    logger.info(f"{len(enlaces)} de {len(parser.enlaces)} CSV coinciden con '{pattern}'")
+    for numero, url in enumerate(enlaces, start=1):
         nombre = Path(urlparse(url).path).name
         carpeta = RAW_TRIPS_DIR if nombre.startswith("datos_abiertos_") else RAW_DATA_DIR
         carpeta.mkdir(parents=True, exist_ok=True)
@@ -87,10 +106,10 @@ def descargar_csvs() -> None:
             if destino.exists():
                 raise FileExistsError(f"El archivo aparecio durante la descarga: {destino}")
             temporal.rename(destino)
-            logger.info(f"[{numero}/{len(parser.enlaces)}] Descargado: {nombre}")
+            logger.info(f"[{numero}/{len(enlaces)}] Descargado: {nombre}")
         finally:
             temporal.unlink(missing_ok=True)
 
 
 if __name__ == "__main__":
-    descargar_csvs()
+    typer.run(descargar_csvs)
