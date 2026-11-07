@@ -133,11 +133,20 @@ donde hereda hiperparámetros, métricas, dataset y firma.
 
 ## 7. Cómo replicarlo
 
+Para reproducir la corrida documentada se requiere
+[`references/nomenclatura_2026_09.csv`](../references/nomenclatura_2026_09.csv), el catálogo
+de 484 estaciones usado originalmente. Si aún no está disponible, primero se debe incorporar
+el PR de limpieza que lo agrega; no continuar con otro catálogo si se busca reproducir estos
+resultados. El catálogo más reciente puede cambiar las estaciones incluidas y, con ello,
+las filas de test y las métricas.
+
 ```bash
 # Terminal 2 (en macOS el puerto 5000 lo ocupa AirPlay; usar 5001)
 make mlflow-ui MLFLOW_PORT=5001
 
 # Terminal 1 (.env: MLFLOW_TRACKING_URI=http://127.0.0.1:5001)
+make download        # descarga los CSV publicados por MiBici, incluidos los de 2024
+cp references/nomenclatura_2026_09.csv data/raw/nomenclatura.csv # fija el catálogo de 484 estaciones
 make data features   # versiones de datos en mibici-data-versioning
 make train           # runs en mibici-training + Model Registry + @champion
 make predict         # inferencia con models:/mibici-demand-24h@champion
