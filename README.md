@@ -16,7 +16,7 @@ Predicción de demanda de bicicletas por estación con los datos abiertos de
 | Jaime Espinosa | [@A01797356](https://github.com/A01797356) |
 | Samantha Rizo Franco | [@SamanthaRizo](https://github.com/SamanthaRizo) |
 | Ytalo Zerpa | [@ZerpaYtalo](https://github.com/ZerpaYtalo) |
-
+| Daniel Rico | [@DanielRCH10](https://github.com/DanielRCH10) |
 
 ## Setup
 
@@ -49,11 +49,41 @@ python -m mibici_demand.dataset clean --pattern "datos_abiertos_2024_*.csv" --ve
 
 `clean` genera `data/interim/trips_clean.parquet` y registra la versión `trips_clean_v1` en el experimento `mibici-data versioning` de MLflow (http://127.0.0.1:5000).
 Para probar sin MLflow agregar `--no-track`.
+## Reproducir el proyecto
+
+```bash
+# Terminal 2 (con el entorno activo)
+make mlflow-ui
+
+# Terminal 1
+make download
+cp references/nomenclatura_2026_09.csv data/raw/nomenclatura.csv   # fija el catálogo de 484 estaciones
+make data features plots train predict
+```
+
+Resultado esperado: 625,551 observaciones de test y MAE ≈ 0.802.
+
+MiBici solo publica su catálogo más reciente. Sin el paso `cp`, se usa ese catálogo y los
+resultados cambian ligeramente (ver `docs/data_versioning.md`).
+
+## Resultados
+
+Demanda horaria por estación con 24 h de anticipación. Test: 21-oct-2024 a 31-dic-2024.
+
+| Modelo | MAE | RMSE | R² | Mejora vs baseline |
+|---|---|---|---|---|
+| Baseline `lag_168` | 0.974 | 1.773 | 0.467 | — |
+| Ridge | 0.922 | 1.480 | 0.629 | 5.4 % |
+| **HGB Poisson (`@champion`)** | **0.802** | **1.344** | **0.694** | **17.7 %** |
+
+Documentación: [modelos y pipeline](docs/modeling.md) ·
+[experimentos y Registry](docs/experiment_tracking.md) ·
+[versiones de datos](docs/data_versioning.md) · [roles](docs/roles_phase2.md) ·
+[ML Canvas](references/ml_canvas.md)
 
 ## Project Organization
 
 ```
-├── LICENSE            <- Open-source license if one is chosen
 ├── Makefile           <- Makefile with convenience commands like `make data` or `make train`
 ├── README.md          <- The top-level README for developers using this project.
 ├── data
@@ -62,7 +92,7 @@ Para probar sin MLflow agregar `--no-track`.
 │   ├── processed      <- The final, canonical data sets for modeling.
 │   └── raw            <- The original, immutable data dump.
 │
-├── docs               <- A default mkdocs project; see www.mkdocs.org for details
+├── docs               <- Documentación del proyecto: modelos, experimentos, datos y roles
 │
 ├── models             <- Trained and serialized models, model predictions, or model summaries
 │
@@ -73,15 +103,15 @@ Para probar sin MLflow agregar `--no-track`.
 ├── pyproject.toml     <- Project configuration file with package metadata for 
 │                         mibici_demand and configuration for tools like black
 │
-├── references         <- Data dictionaries, manuals, and all other explanatory materials.
+├── references         <- ML Canvas y catálogo de estaciones de la corrida oficial
 │
-├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
+├── reports            <- Figuras, exportación de runs y artefactos de la Fase 1
 │   └── figures        <- Generated graphics and figures to be used in reporting
 │
 ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
 │                         generated with `pip freeze > requirements.txt`
 │
-├── setup.cfg          <- Configuration file for flake8
+├── tests              <- Pruebas automatizadas (pytest)
 │
 └── mibici_demand   <- Source code for use in this project.
     │
@@ -89,7 +119,11 @@ Para probar sin MLflow agregar `--no-track`.
     │
     ├── config.py               <- Store useful variables and configuration
     │
-    ├── dataset.py              <- Scripts to download or generate data
+    ├── dataset.py              <- Lectura, estandarización y limpieza de los datos
+    │
+    ├── download.py             <- Descarga los CSV y el catálogo de MiBici
+    │
+    ├── tracking.py             <- Funciones de apoyo para registrar en MLflow
     │
     ├── features.py             <- Code to create features for modeling
     │
