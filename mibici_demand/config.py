@@ -5,6 +5,7 @@ y para poder registrarlos como parámetros en MLflow.
 
 import os
 from pathlib import Path
+
 from dotenv import load_dotenv
 from loguru import logger
 
@@ -70,7 +71,7 @@ RANDOM_STATE = 42
 
 # Parámetros de features
 FEATURE_PARAMS = {
-     "random_state": RANDOM_STATE,
+    "random_state": RANDOM_STATE,
     "target_encoder_cv": 5,
     "freq": "h",  # granularidad de la demanda
     "lags": [1, 24, 168],  # 1 hora, 1 día y 1 semana antes
