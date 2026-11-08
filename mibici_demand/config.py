@@ -66,8 +66,12 @@ CLEANING_PARAMS = {
     "remove_round_trip_under_min": 2.0,  # origen == destino y < 2 min: no hubo viaje
 }
 
+RANDOM_STATE = 42
+
 # Parámetros de features
 FEATURE_PARAMS = {
+     "random_state": RANDOM_STATE,
+    "target_encoder_cv": 5,
     "freq": "h",  # granularidad de la demanda
     "lags": [1, 24, 168],  # 1 hora, 1 día y 1 semana antes
     "test_fraction": 0.2,  # último 20 % del periodo como test (split temporal)
@@ -79,7 +83,7 @@ MODEL_PARAMS = {
     "horizon_h": 24,  # se predice con 24 h de anticipación: solo se usan lags >= 24 h
     "registered_model": "mibici-demand-24h",  # nombre en el MLflow Model Registry
     "champion_alias": "champion",  # alias del modelo con menor MAE en test
-    "random_state": 42,
+    "random_state": RANDOM_STATE,
     "cv_splits": 3,  # TimeSeriesSplit: cada fold valida con datos posteriores a los de ajuste
     "n_iter": 8,  # combinaciones de hiperparámetros por modelo (RandomizedSearchCV)
     "tune_max_rows": 500_000,  # muestra de train para el tuning; el modelo final usa todo train

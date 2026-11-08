@@ -152,7 +152,11 @@ def build_preprocessor(columns: list[str]) -> ColumnTransformer:
             (
                 "station",
                 TargetEncoder(
-                    target_type="continuous", cv=KFold(5, shuffle=True, random_state=42)
+                    target_type="continuous",
+                    cv=KFold(FEATURE_PARAMS["target_encoder_cv"],
+                            shuffle=True,
+                            random_state=FEATURE_PARAMS["random_state"],
+                            )
                 ),
                 ["station_id"],
             ),
@@ -193,7 +197,7 @@ def station_profiles_pca(demand: pd.DataFrame, n_components: int = 5):
     scaled = StandardScaler().fit_transform(profiles)
 
     n_components = min(n_components, *scaled.shape)
-    pca = PCA(n_components=n_components, random_state=42)
+    pca = PCA(n_components=n_components, random_state=FEATURE_PARAMS["random_state"])
     scores = pd.DataFrame(
         pca.fit_transform(scaled),
         index=profiles.index,
