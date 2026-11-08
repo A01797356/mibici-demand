@@ -8,8 +8,10 @@ Pasos:
 Comando:
     python -m mibici_demand.features --version v1
 """
+
 from datetime import date
 from pathlib import Path
+
 import joblib
 from loguru import logger
 import numpy as np
@@ -21,6 +23,7 @@ from sklearn.model_selection import KFold
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler, TargetEncoder
 import typer
+
 from mibici_demand.config import (
     CLEAN_TRIPS_FILE,
     EXPERIMENT_DATA,
@@ -39,6 +42,7 @@ app = typer.Typer(help="Features de demanda por estación.")
 
 TARGET = "departures"
 ID_COLUMNS = ["station_id", "timestamp"]
+
 
 # Variable objetivo
 def aggregate_demand(trips: pd.DataFrame, freq: str = "h") -> pd.DataFrame:
@@ -66,6 +70,7 @@ def aggregate_demand(trips: pd.DataFrame, freq: str = "h") -> pd.DataFrame:
     demand["station_id"] = demand["station_id"].astype("int32")
     return demand.sort_values(ID_COLUMNS, ignore_index=True)
 
+
 # Features
 def _nth_monday(year: int, month: int, n: int) -> date:
     first = date(year, month, 1)
@@ -88,6 +93,7 @@ def mexican_holidays(years) -> set[date]:
         }
     return holidays
 
+
 def add_calendar_features(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
     ts = df["timestamp"]
@@ -104,6 +110,7 @@ def add_calendar_features(df: pd.DataFrame) -> pd.DataFrame:
     df["dow_cos"] = np.cos(2 * np.pi * df["dayofweek"] / 7).astype("float32")
     return df
 
+
 def add_lag_features(df: pd.DataFrame, lags: list[int]) -> pd.DataFrame:
     """Demanda de la misma estación h horas antes. Elimina filas sin historia."""
     df = df.sort_values(ID_COLUMNS).copy()
@@ -117,11 +124,13 @@ def add_lag_features(df: pd.DataFrame, lags: list[int]) -> pd.DataFrame:
     lag_cols = [f"lag_{lag}" for lag in lags]
     return df.dropna(subset=lag_cols).reset_index(drop=True)
 
+
 def add_station_info(df: pd.DataFrame, stations: pd.DataFrame | None) -> pd.DataFrame:
     if stations is None or not {"latitude", "longitude"} <= set(stations.columns):
         return df
     info = stations[["station_id", "latitude", "longitude"]].drop_duplicates("station_id")
     return df.merge(info, on="station_id", how="left")
+
 
 def build_features(
     trips: pd.DataFrame, stations: pd.DataFrame | None = None, params: dict | None = None
@@ -132,12 +141,14 @@ def build_features(
     demand = add_lag_features(demand, params["lags"])
     return add_station_info(demand, stations)
 
+
 # Split y preprocesamiento
 def temporal_split(df: pd.DataFrame, test_fraction: float) -> tuple[pd.DataFrame, pd.DataFrame]:
     """El último test_fraction del periodo es test"""
     timestamps = np.sort(df["timestamp"].unique())
     cutoff = timestamps[int(len(timestamps) * (1 - test_fraction))]
     return df[df["timestamp"] < cutoff].copy(), df[df["timestamp"] >= cutoff].copy()
+
 
 def build_preprocessor(columns: list[str]) -> ColumnTransformer:
     """Escalado de numéricas, one-hot de mes y *target encoding* de estación."""
@@ -153,10 +164,11 @@ def build_preprocessor(columns: list[str]) -> ColumnTransformer:
                 "station",
                 TargetEncoder(
                     target_type="continuous",
-                    cv=KFold(FEATURE_PARAMS["target_encoder_cv"],
-                            shuffle=True,
-                            random_state=FEATURE_PARAMS["random_state"],
-                            )
+                    cv=KFold(
+                        FEATURE_PARAMS["target_encoder_cv"],
+                        shuffle=True,
+                        random_state=FEATURE_PARAMS["random_state"],
+                    ),
                 ),
                 ["station_id"],
             ),
@@ -165,6 +177,7 @@ def build_preprocessor(columns: list[str]) -> ColumnTransformer:
         verbose_feature_names_out=False,
     )
     return preprocessor.set_output(transform="pandas")
+
 
 def transform_split(
     train: pd.DataFrame, test: pd.DataFrame
@@ -205,13 +218,15 @@ def station_profiles_pca(demand: pd.DataFrame, n_components: int = 5):
     ).reset_index()
     return scores, pca, profiles
 
+
 # CLI
 @app.command()
 def main(
     input_path: Path = CLEAN_TRIPS_FILE,
     stations_path: Path = STATIONS_FILE,
     version: str = typer.Option("v1", help="Etiqueta de la versión del dataset"),
-    track: bool = typer.Option(True, help="Registrar la versión en MLflow"),):
+    track: bool = typer.Option(True, help="Registrar la versión en MLflow"),
+):
     """Genera features.parquet, train/test preprocesados y el preprocesador."""
     logger.info(f"Leyendo {input_path}")
     trips = pd.read_parquet(input_path, columns=["start_time", "origin_id"])
@@ -270,6 +285,7 @@ def main(
             mlflow.log_artifact(str(PREPROCESSOR_FILE), artifact_path="preprocessor")
             mlflow.log_artifact(str(pca_path), artifact_path="pca")
     logger.success(f"Train {train_t.shape} | Test {test_t.shape} | {metrics}")
+
 
 if __name__ == "__main__":
     app()
