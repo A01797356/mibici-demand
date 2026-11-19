@@ -55,7 +55,7 @@ pytest -q        # o: make test
 
 | | |
 |---|---|
-| Modelo servido | `models:/mibici-demand-24h@champion` → **`models:/mibici-demand-24h/2`** (HGB Poisson, run `edf541d9795c4852b6d192e466e5129d`) |
+| Modelo servido | `models:/mibici-demand-24h@champion` → **`models:/mibici-demand-24h/4`** (HGB Poisson, MAE 0.802, run `3df12bf7c6ee4bfb821aeb139875b0e9`) |
 | Código | `mibici_demand/api.py` |
 | Documentación OpenAPI | http://127.0.0.1:8000/docs (Swagger) · http://127.0.0.1:8000/openapi.json |
 
@@ -75,8 +75,8 @@ y el catálogo versionado `references/nomenclatura_2026_09.csv`.
 {"instances": [{"station_id": 2, "timestamp": "2024-12-02T08:00", "lag_24": 3, "lag_168": 4}]}
 
 // Salida
-{"model_uri": "models:/mibici-demand-24h@champion", "model_version": "2",
- "predictions": [{"station_id": 2, "timestamp": "2024-12-02T08:00:00", "departures": 7.154}]}
+{"model_uri": "models:/mibici-demand-24h@champion", "model_version": "4",
+ "predictions": [{"station_id": 2, "timestamp": "2024-12-02T08:00:00", "departures": 5.86}]}
 ```
 
 | Campo | Tipo | Regla |
@@ -133,7 +133,7 @@ Demanda horaria por estación con 24 h de anticipación. Test: 21-oct-2024 a 31-
 
 Documentación: [modelos y pipeline](docs/modeling.md) ·
 [experimentos y Registry](docs/experiment_tracking.md) ·
-[versiones de datos](docs/data_versioning.md) · [roles](docs/roles_phase2.md) ·
+[versiones de datos](docs/data_versioning.md) · [reproducibilidad](docs/reproducibility.md) · [roles](docs/roles_phase2.md) ·
 [ML Canvas](references/ml_canvas.md)
 
 ## Project Organization
