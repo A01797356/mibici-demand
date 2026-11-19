@@ -1,4 +1,5 @@
 from types import SimpleNamespace
+
 import pandas as pd
 
 from mibici_demand.features import TARGET
@@ -29,7 +30,6 @@ def test_predict_genera_una_prediccion_por_fila_de_test(tmp_path, monkeypatch):
         sklearn=SimpleNamespace(load_model=lambda uri: FakeModel()),
     )
     monkeypatch.setattr(predict, "mlflow", fake_mlflow)
-  
 
     predict.main(tmp_path / "features.parquet", tmp_path / "pred.parquet", "models:/fake/1")
     out = pd.read_parquet(tmp_path / "pred.parquet")

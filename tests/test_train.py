@@ -40,6 +40,7 @@ def test_pipeline_ajusta_y_predice_sin_leakage():
     assert "lag_1" not in pipeline.feature_names_in_
     assert pipeline.predict(df[columns]).shape == (n,)
 
+
 def test_evaluate_calcula_metricas_y_mejora_vs_baseline():
     metrics = evaluate([0, 2, 4], [1, 2, 3], baseline_mae=2.0)
 
