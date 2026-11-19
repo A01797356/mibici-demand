@@ -87,6 +87,42 @@ y el catálogo versionado `references/nomenclatura_2026_09.csv`.
 
 `GET /health` devuelve el estado y la versión del modelo cargado.
 
+## Contenedor Docker
+
+Imagen pública: **[`joer2040/mibici-demand-api`](https://hub.docker.com/r/joer2040/mibici-demand-api)**.
+Incluye la API, sus dependencias (`requirements.txt`) y el modelo, así que no necesita servidor MLflow.
+
+| Etiqueta | Significado |
+|---|---|
+| `1.0.0` | Versión del servicio (API + imagen) |
+| `model-v4` | Modelo incluido: `models:/mibici-demand-24h/4` (run `3df12bf7c6ee4bfb821aeb139875b0e9`) |
+| `latest` | Última publicada |
+
+Las tres apuntan al digest `sha256:02aea1282a04ce1ad04a8d4a4e83162a77c871d5d6916567184e46b160b1b356`.
+
+**Ejecutar la imagen publicada:**
+
+```bash
+docker run -p 8000:8000 joer2040/mibici-demand-api:1.0.0
+# Swagger: http://127.0.0.1:8000/docs
+```
+
+**Construir desde el repo** (requiere el Registry de MLflow para exportar el modelo):
+
+```bash
+python -c "import mlflow; mlflow.artifacts.download_artifacts('models:/mibici-demand-24h/4', dst_path='models/champion')"
+docker build -t ml-service:latest .
+docker run -p 8000:8000 ml-service:latest
+```
+
+**Publicar una versión nueva:**
+
+```bash
+docker tag ml-service:latest joer2040/mibici-demand-api:<version>
+docker tag ml-service:latest joer2040/mibici-demand-api:model-v<N>
+docker push --all-tags joer2040/mibici-demand-api
+```
+
 ## Datos y limpieza
 
 ```bash

@@ -197,3 +197,6 @@ mlflow.db
 
 # Artefactos generados (se versionan en MLflow, no en Git)
 models/*.joblib
+
+# Modelo exportado para la imagen Docker (versionado en MLflow)
+models/champion/
