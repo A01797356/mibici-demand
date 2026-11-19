@@ -48,7 +48,44 @@ pytest -q        # o: make test
 | Unitarias | `tests/test_train.py` | Exclusión de variables con leakage, Pipeline y cálculo de métricas |
 | Unitarias | `tests/test_predict.py` | Inferencia de `predict.py` con un modelo simulado (sin MLflow) |
 | Unitarias | `tests/test_data.py`, `test_dataset.py`, `test_download.py` | Configuración, lectura con encoding y filtro de descarga |
+| Unitarias | `tests/test_api.py` | Endpoint `POST /predict`: respuesta con versión del modelo, validación (422) y modelo no cargado (503) |
 | Integración | `tests/test_integration.py` | Flujo completo con datos sintéticos: carga → features → split → entrenamiento → predicción → métricas |
+
+## Servicio del modelo (FastAPI)
+
+| | |
+|---|---|
+| Modelo servido | `models:/mibici-demand-24h@champion` → **`models:/mibici-demand-24h/2`** (HGB Poisson, run `edf541d9795c4852b6d192e466e5129d`) |
+| Código | `mibici_demand/api.py` |
+| Documentación OpenAPI | http://127.0.0.1:8000/docs (Swagger) · http://127.0.0.1:8000/openapi.json |
+
+```bash
+# Requiere el servidor MLflow con el Model Registry en http://127.0.0.1:5000
+uvicorn mibici_demand.api:app --port 8000
+```
+
+La variable `MODEL_URI` cambia el modelo servido (por defecto, el alias `@champion`).
+
+**`POST /predict`:** el cliente envía solo lo que conoce 24 h antes; el servicio calcula las
+variables de calendario y las coordenadas con las mismas funciones del pipeline (`features.py`)
+y el catálogo versionado `references/nomenclatura_2026_09.csv`.
+
+```json
+// Entrada
+{"instances": [{"station_id": 2, "timestamp": "2024-12-02T08:00", "lag_24": 3, "lag_168": 4}]}
+
+// Salida
+{"model_uri": "models:/mibici-demand-24h@champion", "model_version": "2",
+ "predictions": [{"station_id": 2, "timestamp": "2024-12-02T08:00:00", "departures": 7.154}]}
+```
+
+| Campo | Tipo | Regla |
+|---|---|---|
+| `station_id` | int | ID de estación MiBici |
+| `timestamp` | datetime | Hora a predecir |
+| `lag_24`, `lag_168` | float | Salidas de la estación 24 h y 168 h antes; ≥ 0 (si no, 422) |
+
+`GET /health` devuelve el estado y la versión del modelo cargado.
 
 ## Datos y limpieza
 
