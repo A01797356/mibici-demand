@@ -34,6 +34,22 @@ pytest
 
 Los datos (`data/`) no se versionan en Git; sus versiones se registran en MLflow.
 
+## Pruebas
+
+Todas las pruebas se ejecutan con un solo comando (no requieren datos descargados ni servidor MLflow):
+
+```bash
+pytest -q        # o: make test
+```
+
+| Tipo | Archivo | Qué valida |
+|---|---|---|
+| Unitarias | `tests/test_features.py` | Agregación de demanda, calendario, lags y split temporal |
+| Unitarias | `tests/test_train.py` | Exclusión de variables con leakage, Pipeline y cálculo de métricas |
+| Unitarias | `tests/test_predict.py` | Inferencia de `predict.py` con un modelo simulado (sin MLflow) |
+| Unitarias | `tests/test_data.py`, `test_dataset.py`, `test_download.py` | Configuración, lectura con encoding y filtro de descarga |
+| Integración | `tests/test_integration.py` | Flujo completo con datos sintéticos: carga → features → split → entrenamiento → predicción → métricas |
+
 ## Datos y limpieza
 
 ```bash
