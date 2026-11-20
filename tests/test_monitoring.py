@@ -18,7 +18,7 @@ def _data(n=1000):
 
 def test_escenarios_alteran_solo_lo_que_simulan():
     df, s = _data(), scenarios(P)
-    rng = lambda: np.random.default_rng(0)  # noqa: E731
+    rng = lambda: np.random.default_rng(0)
 
     shifted = s["media_desplazada"](df, rng())
     assert (shifted["lag_24"] == df["lag_24"] * P["mean_shift_factor"]).all()
