@@ -180,60 +180,63 @@ Demanda horaria por estación con 24 h de anticipación. Test: 21-oct-2024 a 31-
 
 Documentación: [modelos y pipeline](docs/modeling.md) ·
 [experimentos y Registry](docs/experiment_tracking.md) ·
-[versiones de datos](docs/data_versioning.md) · [reproducibilidad](docs/reproducibility.md) · [roles](docs/roles_phase2.md) ·
+[versiones de datos](docs/data_versioning.md) · [reproducibilidad](docs/reproducibility.md) ·
+[monitoreo](docs/monitoring.md) · [roles](docs/roles_phase2.md) ·
 [ML Canvas](references/ml_canvas.md)
 
 ## Project Organization
 
 ```
-├── Makefile           <- Makefile with convenience commands like `make data` or `make train`
-├── README.md          <- The top-level README for developers using this project.
-├── data
-│   ├── external       <- Data from third party sources.
-│   ├── interim        <- Intermediate data that has been transformed.
-│   ├── processed      <- The final, canonical data sets for modeling.
-│   └── raw            <- The original, immutable data dump.
+├── Dockerfile         <- Imagen del servicio FastAPI con el modelo v4
+├── .dockerignore      <- Archivos excluidos del contexto de build
+├── Makefile           <- Comandos del pipeline: `make data`, `make train`, `make test`
+├── README.md          <- Guía del proyecto
+├── data               <- No se versiona en Git; las versiones se registran en MLflow
+│   ├── external       <- Datos de terceros
+│   ├── interim        <- Viajes limpios (trips_clean.parquet)
+│   ├── processed      <- Features para el modelo (features.parquet)
+│   └── raw            <- CSV originales de MiBici y catálogo de estaciones
 │
-├── docs               <- Documentación del proyecto: modelos, experimentos, datos y roles
+├── docs               <- Documentación: modelos, experimentos, datos, reproducibilidad, monitoreo y roles
+│   ├── data_versioning.md
+│   ├── experiment_tracking.md
+│   ├── modeling.md
+│   ├── monitoring.md        <- Data drift, umbrales y alertas (Punto 5)
+│   ├── reproducibility.md   <- Prueba en entorno limpio (Punto 3)
+│   └── roles_phase2.md
 │
-├── models             <- Trained and serialized models, model predictions, or model summaries
+├── models
+│   └── champion       <- Modelo v4 exportado del Registry para Docker (no se versiona en Git)
 │
-├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
-│                         the creator's initials, and a short `-` delimited description, e.g.
-│                         `1.0-jqp-initial-data-exploration`.
+├── notebooks          <- Exploración, limpieza y EDA (convención: número-iniciales-descripción)
 │
-├── pyproject.toml     <- Project configuration file with package metadata for 
-│                         mibici_demand and configuration for tools like black
+├── pyproject.toml     <- Metadatos del paquete mibici_demand y configuración de ruff y pytest
 │
 ├── references         <- ML Canvas y catálogo de estaciones de la corrida oficial
 │
-├── reports            <- Figuras, exportación de runs y artefactos de la Fase 1
-│   └── figures        <- Generated graphics and figures to be used in reporting
+├── reports
+│   ├── drift          <- Reportes HTML de Evidently y summary.csv por escenario
+│   ├── experiments    <- Exportación de runs de MLflow
+│   ├── fase1_mlflow_artifacts <- Artefactos de la Fase 1
+│   ├── figures        <- Gráficas de EDA, PCA y drift
+│   └── reproducibility_check.csv <- Comparación oficial vs entorno limpio
 │
-├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
-│                         generated with `pip freeze > requirements.txt`
+├── requirements.txt   <- Dependencias con versión fija
 │
-├── tests              <- Pruebas automatizadas (pytest)
+├── tests              <- Pruebas unitarias y de integración (pytest -q)
 │
-└── mibici_demand   <- Source code for use in this project.
-    │
-    ├── __init__.py             <- Makes mibici_demand a Python module
-    │
-    ├── config.py               <- Store useful variables and configuration
-    │
-    ├── dataset.py              <- Lectura, estandarización y limpieza de los datos
-    │
-    ├── download.py             <- Descarga los CSV y el catálogo de MiBici
-    │
-    ├── tracking.py             <- Funciones de apoyo para registrar en MLflow
-    │
-    ├── features.py             <- Code to create features for modeling
-    │
-    ├── modeling                
-    │   ├── __init__.py 
-    │   ├── predict.py          <- Code to run model inference with trained models          
-    │   └── train.py            <- Code to train models
-    │
-    └── plots.py                <- Code to create visualizations
- 
+└── mibici_demand      <- Código fuente del proyecto
+    ├── __init__.py
+    ├── api.py         <- Servicio FastAPI (POST /predict, GET /health)
+    ├── config.py      <- Rutas, parámetros y semillas
+    ├── dataset.py     <- Lectura, estandarización y limpieza de los datos
+    ├── download.py    <- Descarga los CSV y el catálogo de MiBici
+    ├── features.py    <- Agregación horaria, calendario, lags y split temporal
+    ├── monitoring.py  <- Simulación de data drift y alertas con Evidently
+    ├── plots.py       <- Gráficas de EDA registradas en MLflow
+    ├── tracking.py    <- Funciones de apoyo para registrar en MLflow
+    └── modeling
+        ├── __init__.py
+        ├── predict.py <- Predicción del periodo de test con el modelo @champion
+        └── train.py   <- Entrenamiento, tuning y registro en el Model Registry
 ```
