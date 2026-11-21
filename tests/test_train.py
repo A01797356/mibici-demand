@@ -1,8 +1,14 @@
 import numpy as np
 import pandas as pd
+import pytest
 from sklearn.linear_model import Ridge
 
-from mibici_demand.modeling.train import build_pipeline, feature_columns, leakage_columns
+from mibici_demand.modeling.train import (
+    build_pipeline,
+    evaluate,
+    feature_columns,
+    leakage_columns,
+)
 
 
 def test_leakage_excluye_lo_que_no_se_conoce_24h_antes():
@@ -33,3 +39,10 @@ def test_pipeline_ajusta_y_predice_sin_leakage():
 
     assert "lag_1" not in pipeline.feature_names_in_
     assert pipeline.predict(df[columns]).shape == (n,)
+
+def test_evaluate_calcula_metricas_y_mejora_vs_baseline():
+    metrics = evaluate([0, 2, 4], [1, 2, 3], baseline_mae=2.0)
+
+    assert metrics["mae"] == pytest.approx(2 / 3)
+    assert metrics["rmse"] == pytest.approx((2 / 3) ** 0.5)
+    assert metrics["mae_improvement_vs_baseline_pct"] == pytest.approx(100 * (1 - (2 / 3) / 2))
