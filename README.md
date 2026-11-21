@@ -47,8 +47,10 @@ python -m mibici_demand.dataset standardize # opcional: estandariza un parquet p
 python -m mibici_demand.dataset clean --pattern "datos_abiertos_2024_*.csv" --version v1
 ```
 
-`clean` genera `data/interim/trips_clean.parquet` y registra la versión `trips_clean_v1` en el experimento `mibici-data versioning` de MLflow (http://127.0.0.1:5000).
+`clean` genera `data/interim/trips_clean.parquet` y registra la versión `trips_clean_v1` en el experimento `mibici-data-versioning` de MLflow (http://127.0.0.1:5000).
+
 Para probar sin MLflow agregar `--no-track`.
+
 ## Reproducir el proyecto
 
 ```bash
@@ -135,18 +137,3 @@ Documentación: [modelos y pipeline](docs/modeling.md) ·
     └── plots.py                <- Code to create visualizations
  
 ```
-# Avance de preparación de datos
-Se ejecutó exitosamente la descarga y estandarización de los datos históricos de MiBici.
-
-Results
-Downloaded files: 143 CSV files
-Standardized files: 142 Parquet files
-Processed records: 39,078,984
-Pipeline
-download.py ↓ Raw CSV files
-
-dataset.py ↓ Standardization
-
-Parquet files ↓ data/interim/standardized
---------
-

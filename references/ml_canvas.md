@@ -30,7 +30,7 @@ Fuente de datos: [datos abiertos de MiBici](https://mibici.net/en/open-data/).
 
 ## 6. Features
 - **Calendario:** hora, día de la semana, mes, fin de semana y festivo oficial; hora y día con codificación cíclica (seno y coseno).
-- **Historial:** demanda de la misma estación 1h, 24h y 168h antes, y media de las 24h previas.
+- **Historial:** demanda de la misma estación 24h y 168h antes. Con horizonte de 24h se excluyen el lag de 1h y la media de las 24h previas (`lag_1`, `rolling_mean_24`): al momento de predecir todavía no se conocen (data leakage).
 - **Estación:** latitud, longitud y demanda media histórica (*target encoding*).
 - **Perfil de estación:** componentes PCA del perfil semanal (168 horas).
 

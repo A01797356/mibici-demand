@@ -6,7 +6,7 @@ PROJECT_NAME = mibici_demand
 PYTHON_VERSION = 3.12
 PYTHON_INTERPRETER = python
 
-# Parámetros del pipeline. Para cmabiarlos: make data PATTERN="datos_abiertos_2023_*.csv" VERSION=v2
+# Parámetros del pipeline. Para cambiarlos: make data PATTERN="datos_abiertos_2023_*.csv" VERSION=v2
 PATTERN ?= datos_abiertos_2024_*.csv
 VERSION ?= v1
 MLFLOW_PORT ?= 5000
@@ -66,10 +66,15 @@ mlflow-ui:
 	mlflow server --backend-store-uri sqlite:///mlflow.db \
 		--artifacts-destination ./mlartifacts --host 127.0.0.1 --port $(MLFLOW_PORT) $(MLFLOW_HOSTS)
 
-## Descarga MiBici CSVs a data/raw/trips/ y el catálogo de estaicones a data/raw/
+## Descarga MiBici CSVs a data/raw/trips/ y el catálogo de estaciones a data/raw/
 .PHONY: download
 download:
 	$(PYTHON_INTERPRETER) -m mibici_demand.download --pattern "$(PATTERN)"
+
+## Fija el catálogo de 484 estaciones de la corrida oficial (MiBici solo publica el más reciente)
+.PHONY: catalog
+catalog:
+	cp references/nomenclatura_2026_09.csv data/raw/nomenclatura.csv
 
 ## Archivos de limpieza -> data/interim/trips_clean.parquet 
 .PHONY: data
@@ -97,9 +102,9 @@ train:
 predict:
 	$(PYTHON_INTERPRETER) -m mibici_demand.modeling.predict
 
-## Ejecuta el proceso en orden:preparación de datos, generación de variables y creación de gráficas.
+## Ejecuta el proceso completo con la corrida oficial: descarga, catálogo fijo, limpieza, features, gráficas, entrenamiento y predicción.
 .PHONY: pipeline
-pipeline: download data features plots train predict
+pipeline: download catalog data features plots train predict
 
 #################################################################################
 # Self Documenting Commands                                                     #
