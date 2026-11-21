@@ -49,6 +49,7 @@ pytest -q        # o: make test
 | Unitarias | `tests/test_predict.py` | Inferencia de `predict.py` con un modelo simulado (sin MLflow) |
 | Unitarias | `tests/test_data.py`, `test_dataset.py`, `test_download.py` | Configuración, lectura con encoding y filtro de descarga |
 | Unitarias | `tests/test_api.py` | Endpoint `POST /predict`: respuesta con versión del modelo, validación (422) y modelo no cargado (503) |
+| Unitarias | `tests/test_monitoring.py` | Escenarios de drift y reglas de alerta |
 | Integración | `tests/test_integration.py` | Flujo completo con datos sintéticos: carga → features → split → entrenamiento → predicción → métricas |
 
 ## Servicio del modelo (FastAPI)
@@ -122,6 +123,16 @@ docker tag ml-service:latest joer2040/mibici-demand-api:<version>
 docker tag ml-service:latest joer2040/mibici-demand-api:model-v<N>
 docker push --all-tags joer2040/mibici-demand-api
 ```
+
+## Monitoreo de data drift
+
+```bash
+python -m mibici_demand.monitoring      # requiere data/processed/features.parquet y models/champion
+```
+
+Simula tres escenarios de drift (lags desplazados, variables faltantes y cambio estacional),
+evalúa el modelo v4 contra un control sin drift y aplica los umbrales de alerta de
+`MONITORING_PARAMS`. Diseño, resultados y criterios: [docs/monitoring.md](docs/monitoring.md).
 
 ## Datos y limpieza
 

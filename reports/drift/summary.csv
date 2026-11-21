@@ -1,0 +1,5 @@
+escenario,mae,rmse,r2,bias_pct,drift_share,max_null_share,mae_change_pct,estado,accion
+sin_drift,0.8098,1.3792,0.6914,4.8215,0.0,0.0,0.0,OK,Ninguna
+media_desplazada,0.8876,1.5631,0.6036,22.7024,0.25,0.0,9.599,ALERTA,"Revisar feature pipeline; si los datos son válidos, reentrenar"
+faltantes,0.8162,1.4332,0.6667,-0.1154,0.0,0.2992,0.7818,AVISO,Revisar feature pipeline: variables faltantes
+estacional,0.8066,1.3563,0.2665,64.6398,0.125,0.0,-0.4011,ALERTA,"Revisar feature pipeline; si los datos son válidos, reentrenar"

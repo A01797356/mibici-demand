@@ -101,6 +101,19 @@ SEARCH_SPACES = {
     },
 }
 
+# Monitoreo: simulación de data drift y criterios de alerta (monitoring.py)
+MONITORING_PARAMS = {
+    "random_state": RANDOM_STATE,
+    "sample_rows": 50_000,  # filas de referencia y de conjunto actual (muestras del test)
+    "mean_shift_factor": 1.5,  # escenario media_desplazada: lags inflados x1.5
+    "missing_share": 0.3,  # escenario faltantes: 30 % de lag_168 vacío
+    "seasonal_keep": 0.6,  # escenario estacional: la demanda real cae al 60 %
+    "mae_alert_pct": 10.0,  # ALERTA si el MAE empeora >= 10 % vs el control
+    "bias_alert_pct": 15.0,  # ALERTA si |media pred - media real| / media real >= 15 %
+    "drift_share_alert": 0.3,  # AVISO si >= 30 % de las variables tiene drift
+    "null_alert_share": 0.05,  # > 5 % de nulos en una variable: revisar feature pipeline
+}
+
 INVALID_ID_VALUES = {
     "Origen_Id": [0],
     "Destino_Id": [0],
