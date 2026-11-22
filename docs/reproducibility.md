@@ -50,6 +50,6 @@ Se reentrenó con el catálogo fijo y `@champion` pasó a la v4, que es la que s
 La imagen publicada se descargó y ejecutó en una computadora con Windows distinta a la de entrenamiento. 
 El digest coincide (`sha256:02aea128…b356`) y `POST /predict` con el ejemplo del README devuelve `model_version` 4 y 5.86, igual que en el entorno oficial.
 
-![Predicción desde el contenedor](../reports/figures/evidencias/06_swagger_predict_200.png)
+![Predicción desde el contenedor](../reports/figures/Evidencias/06_swagger_predict_200.png)
 
-Capturas completas en [`reports/figures/evidencias/`](../reports/figures/evidencias/).
+Capturas completas en [`reports/figures/Evidencias/`](../reports/figures/Evidencias/).
