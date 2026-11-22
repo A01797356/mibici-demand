@@ -43,3 +43,13 @@ numera sus versiones por separado. Las predicciones idénticas confirman que es 
 Antes de esta prueba, el `@champion` del Registry oficial era la v2 (MAE 0.8028), entrenada con el
 catálogo de 470 estaciones antes de fijarlo, y no coincidía con el resultado documentado (0.802).
 Se reentrenó con el catálogo fijo y `@champion` pasó a la v4, que es la que sirve la API.
+
+
+## Prueba en otra máquina (imagen Docker)
+
+La imagen publicada se descargó y ejecutó en una computadora con Windows distinta a la de entrenamiento. 
+El digest coincide (`sha256:02aea128…b356`) y `POST /predict` con el ejemplo del README devuelve `model_version` 4 y 5.86, igual que en el entorno oficial.
+
+![Predicción desde el contenedor](../reports/figures/evidencias/06_swagger_predict_200.png)
+
+Capturas completas en [`reports/figures/evidencias/`](../reports/figures/evidencias/).
